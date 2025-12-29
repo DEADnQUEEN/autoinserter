@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "CodeInserter",
+    "description": "code inserter",
+    "version": "0.1",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://hands.ru/web-backoffice/", 
+                "https://hands.ru/web-backoffice/?*"
+            ],
+            "js": [
+                "node_modules/xlsx/xlsx.js",
+                "src/scripts/xlsx_export.js",
+                "src/hands/main.js"
+            ]
+        }
+    ]
+}
