@@ -1,26 +1,28 @@
-const urlAdress = "Адрес_ссылка"
+function filterShop(content_object) {
+    if (content_object === null || content_object === undefined) {
+        return null
+    }
 
-const renames = {
-    "Создан": "дата поступления заказа",
-    "ФИО клиента": "ФИО",
-    "Телефоны клиента": "номер телефона",
-    "Стоимость": "Оплата в магазине клиентом",
-    "Время работы": "дата"
+    let shop = content_object[shop_field]
+    if (shop === undefined) {
+        return null
+    }
+
+    let rename = shop_renames[shop.trim()]
+
+    if (rename === undefined || rename === null) {
+        return null
+    }
+    content_object[shop_field] = rename
+    
+    return content_object
 }
-
-const type_field_get = "Услуга"
-const type_field_set = "Тип кухни"
-const types = {
-    "14": "кухня",
-    "15": "хранение"
-}
-const calc_types = ["Замер", "замер"]
-const calc_type = "замер"
-
-const compensation = "Компенсация"
-const priceColumn = "Оплата в магазине клиентом"
 
 function setType(content) {
+    if (content === null || content === undefined) {
+        return null
+    }
+
     var content_type = types[content[type_field_get].split(" ", 1)[0]]
     if (content_type === undefined) {
         return null
@@ -109,7 +111,10 @@ el.onclick = async () => {
                 }
 
                 obj[urlAdress] =  dom.querySelector("span.order-address > a").href
+                
                 obj = setType(obj)
+                obj = filterShop(obj)
+
                 if (obj === null) {
                     return []
                 }
