@@ -13,8 +13,8 @@ const renames = {
 const type_field_get = "Услуга"
 const type_field_set = "Тип кухни"
 const types = {
-    "14": "кухня",
-    "15": "хранение"
+    "14": "хранение",
+    "15": "кухня",
 }
 
 const calc_type = "замер"
