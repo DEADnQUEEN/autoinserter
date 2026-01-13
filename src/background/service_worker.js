@@ -12,8 +12,10 @@ import {
     function_fields
 } from "./functions.js"
 
-async function open_url(url, tab, browser) {
 
+var browser = null
+
+async function open_url(url, tab) {
     if (browser === null || browser === undefined) {
         if (tab === null || tab === undefined) {
             throw "Exception"
@@ -28,7 +30,7 @@ async function open_url(url, tab, browser) {
 
     await page.goto(url)
 
-    return [page, browser]
+    return page
 }
 
 chrome.runtime.onMessage.addListener(
@@ -40,11 +42,10 @@ chrome.runtime.onMessage.addListener(
                     currentWindow: true 
                 }, 
                 async (tabs) => {
-                    let browser = null
                     let page = null
 
                     for (let i = 0; i < message.urls.length; i++) {
-                        [page, browser] = await open_url(message.urls[i], tabs[0].id, browser)
+                        page = await open_url(message.urls[i], tabs[0].id, browser)
 
                         var obj = {}
                         for (var selector in selector_to_input) {
@@ -54,10 +55,8 @@ chrome.runtime.onMessage.addListener(
 
                         for (var func_selection in function_fields) {
                             obj[func_selection] = await function_fields[func_selection](page)
-                            console.log(obj)
                         }
-                        console.log(i, message.urls[i])
-                    }                        
+                    }
                     await open_url(message.return_to, tabs[0].id, browser)
 
                     sendResponse(
@@ -71,10 +70,11 @@ chrome.runtime.onMessage.addListener(
         } else if (message.type === "set_url") {
             chrome.tabs.query(
                 {
-
+                    
                 },
                 async (tabs) => {
-
+                    await open_url(message.urls[i], tabs[0].id, browser)
+                    
                 }
             )
         }

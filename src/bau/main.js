@@ -34,7 +34,7 @@ waitForElm('#fi1 > div.AddCrit > div.contBtnMap > div').then((elm) => {
 
         var resp = await chrome.runtime.sendMessage({type: "bau_url", urls: urls, return_to: window.location.href})
 
-        console.log(output)
+        console.log(resp)
         // exportJsonToExcel(output)
     }
 
