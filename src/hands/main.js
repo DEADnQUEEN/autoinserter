@@ -1,15 +1,80 @@
 const urlAdress = "Адрес_ссылка"
 
 const renames = {
-    "Создан": "дата поступления",
+    "Создан": "дата поступления заказа",
     "ФИО клиента": "ФИО",
     "Телефоны клиента": "номер телефона",
     "Стоимость": "Оплата в магазине клиентом",
     "Время работы": "дата"
 }
 
+const type_field_get = "Услуга"
+const type_field_set = "Тип кухни"
+const types = {
+    "14": "кухня",
+    "15": "хранение"
+}
+const calc_types = ["Замер", "замер"]
+const calc_type = "замер"
+
+const compensation = "Компенсация"
+const priceColumn = "Оплата в магазине клиентом"
+
+function setType(content) {
+    var content_type = types[content[type_field_get].split(" ", 1)[0]]
+    if (content_type === undefined) {
+        return null
+    }
+
+    for (let i = 0; i < calc_types.length; i++) {
+        calc_type_check = calc_types[i]
+        if (content[type_field_get].includes(calc_type_check)) {
+            content[type_field_set] = calc_type
+            return content
+        }
+    }
+
+    content[type_field_set] = content_type
+
+    return content
+}
+
+function cloneCompensation(content) {
+    var compensationProp = null
+    for (var prop in content) {
+        if (prop.includes(compensation)) {
+            compensationProp = prop
+            break
+        }
+    }
+
+    if (compensationProp === null) {
+        return [content]
+    }
+
+    var order_row = {}
+    var compensation_row = {}
+    for (var prop in content) {
+        if (prop === compensationProp){
+            continue
+        }
+        compensation_row[prop] = content[prop]
+        order_row[prop] = content[prop]
+    }
+
+    compensation_row[priceColumn] = content[compensationProp]
+    if (compensation_row[type_field_set] === calc_type) {
+        compensation_row[type_field_set] = "компенсация замер"
+    } else {
+        compensation_row[type_field_set] = "компенсация"
+    }
+
+
+    return [order_row, compensation_row]
+}
+
 var el = document.createElement("a")
-el.textContent = "Скачать все"
+el.textContent = "Скачать на странице"
 el.href = "#"
 
 el.onclick = async () => {
@@ -19,7 +84,7 @@ el.onclick = async () => {
     for (let i = 0; i < rows.length; i++) {
         var url = "https:"+rows[i].getAttribute("onclick").match(/\'(\/\/hands\.ru\/web-backoffice\/order\/.+)\'/)[1]
         
-        output.push(await fetch(
+        output.push(...await fetch(
             url
         ).then(
             (response) => {return response.text()}
@@ -27,7 +92,7 @@ el.onclick = async () => {
             (text) => {
                 var dom = new DOMParser().parseFromString(text, 'text/html')
                 var obj = {}
-                var content = dom.querySelectorAll("body > div.rk-body > div > section:nth-child(6) > div > span")
+                var content = dom.querySelector("body > div.rk-body > div > section").querySelectorAll("div > span")
                 for (let j = 0; j < content.length; j += 2) {
                     var value = content[j + 1]
                     if (value === undefined || value === null) {
@@ -44,8 +109,12 @@ el.onclick = async () => {
                 }
 
                 obj[urlAdress] =  dom.querySelector("span.order-address > a").href
-
-                return obj
+                obj = setType(obj)
+                if (obj === null) {
+                    return []
+                }
+ 
+                return cloneCompensation(obj)
             }
         ))
     }
