@@ -3,6 +3,12 @@
     "name": "CodeInserter",
     "description": "code inserter",
     "version": "0.1",
+    "permissions": [
+        "tabs",
+        "activeTab",
+        "debugger", 
+        "background"
+    ],
     "content_scripts": [
         {
             "matches": [
@@ -15,6 +21,21 @@
                 "src/hands/constants.js",
                 "src/hands/main.js"
             ]
+        },
+        {
+            "matches": [
+                "https://baucrm.ithead.ru/sbm/orders_find.php", 
+                "https://baucrm.ithead.ru/sbm/orders_find.php?*"
+            ],
+            "js": [
+                "node_modules/xlsx/xlsx.js",
+                "src/scripts/xlsx_export.js",
+                "src/bau/main.js"
+            ]
         }
-    ]
+    ],
+    "background": {
+        "service_worker": "src/background/service_worker.js",
+        "type": "module"
+    }
 }

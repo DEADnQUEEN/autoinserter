@@ -1,9 +1,14 @@
-function exportJsonToExcel(data) {
-    // Create a new workbook
+// Create a new workbook
+function exportJsonToExcel(data, order = undefined) {
     const workbook = XLSX.utils.book_new();
 
-    // Convert JSON data to a worksheet
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    var worksheet
+    if (order === undefined){
+        // Convert JSON data to a worksheet
+        worksheet = XLSX.utils.json_to_sheet(data);
+    } else {
+        worksheet = XLSX.utils.json_to_sheet(data, {header: order});
+    }
 
     // Append the worksheet to the workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
