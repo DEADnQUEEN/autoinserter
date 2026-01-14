@@ -12,6 +12,7 @@
             "js": [
                 "node_modules/xlsx/xlsx.js",
                 "src/scripts/xlsx_export.js",
+                "src/hands/constants.js",
                 "src/hands/main.js"
             ]
         }
