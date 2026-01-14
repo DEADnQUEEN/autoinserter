@@ -11,7 +11,10 @@ import {
     order_query,
     masters_exist_query
 } from "./constants.js"
-import { pretty_print } from "../scripts/prettyprint.js"
+
+import { 
+    pretty_print 
+} from "../scripts/prettyprint.js"
 
 
 export const get_value_from_input = (el) => {return el.value}
@@ -67,8 +70,6 @@ async function concat_order_content(page) {
                 head_array.push(elements[i].textContent)
             }
 
-            console.log(elements)
-
             return [head_array]
         }
     )
@@ -79,7 +80,6 @@ async function concat_order_content(page) {
 
     await page.waitForSelector(last_row_sel)
     let last_row = await page.$$eval("#gr1nw > div.gz_summary > div:nth-child(2) > div", (els) => {
-        console.log(els)
         return ["Итого: " + els[els.length-1].textContent]
     });
 
@@ -103,14 +103,13 @@ async function get_address(page) {
         }
     }
 
-    console.log(address)
-
     return address
 }
 
 
 async function get_all_masters(page) {
     await page.waitForSelector(masters_exist_query)
+    
     if (
         await page.evaluate(
             (master_name_query) => {
@@ -121,28 +120,30 @@ async function get_all_masters(page) {
     ) {
         return ""
     }
-    var master_row = await page.$$eval(
-        master_rows_query,
-        (elements) => {
+
+    return await page.evaluate(
+        (master_name_query, master_rows_query) => {
+            let elements = document.querySelectorAll(master_rows_query)
             var master_array = []
             for (let i = 0;i < elements.length; i++) {
                 master_array.push(elements[i].querySelector(master_name_query).innerText.split("\n", 1)[0])
             }
-            return master_array
-        }
+            
+            if (master_array.length === 0) {
+                return ""
+            }
+
+            let text = master_array[0]
+
+            for (let i = 1; i < master_array.length; i++) {
+                text += ", " + master_array[i]
+            }
+
+            return text
+        },
+        master_name_query,
+        master_rows_query
     )
-    
-    if (master_row.length === 0) {
-        return ""
-    }
-
-    let text = master_row[0]
-
-    for (let i = 1; i < master_row.length; i++) {
-        text += ", " + master_row[i]
-    }
-
-    return text
 }
 
 

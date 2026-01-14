@@ -14,7 +14,7 @@ export const selector_to_input = {
 
 export const magazine_types = {
     "РШ": "шш",
-    "Сз": "селезнева"
+    "СЗ": "селезнева"
 }
 
 export const rows_sel = "div[id^='h2-gr1nw-'"

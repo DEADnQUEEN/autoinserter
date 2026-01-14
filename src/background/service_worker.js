@@ -13,39 +13,27 @@ import {
 } from "./functions.js"
 
 
-var browser = null
+var collectedObjects = null
 
-async function open_url(url, tab) {
-    if (browser === null || browser === undefined) {
-        if (tab === null || tab === undefined) {
-            throw "Exception"
-        }
-        browser = await connect({
-            transport: await ExtensionTransport.connectTab(tab),
-            defaultViewport: null,
-        });
-    }
-
-    const [page] = await browser.pages()
-
-    await page.goto(url)
-
-    return page
-}
 
 chrome.runtime.onMessage.addListener(
     (message, sender, sendResponse) => {
-        if (message.type === "bau_url") {
+        if (message.type === "collectObjects") {
             chrome.tabs.query(
                 {
                     active: true, 
                     currentWindow: true 
                 }, 
-                async (tabs) => {
-                    let page = null
+                async (tabs) => {    
+                    const browser = await connect({
+                        transport: await ExtensionTransport.connectTab(tabs[0].id),
+                        defaultViewport: null,
+                    });
+                    const [page] = await browser.pages()
 
+                    var objects = []
                     for (let i = 0; i < message.urls.length; i++) {
-                        page = await open_url(message.urls[i], tabs[0].id, browser)
+                        await page.goto(message.urls[i])
 
                         var obj = {}
                         for (var selector in selector_to_input) {
@@ -56,27 +44,33 @@ chrome.runtime.onMessage.addListener(
                         for (var func_selection in function_fields) {
                             obj[func_selection] = await function_fields[func_selection](page)
                         }
+                        console.log(obj)
+                        objects.push(obj)
                     }
-                    await open_url(message.return_to, tabs[0].id, browser)
 
-                    sendResponse(
-                        {
-                            response: "ready",
-                        }
-                    )
+                    for (let i = 9; i < message.urls.length; i++) {
+                        await page.goBack()
+                    }
+
+                    collectedObjects = objects
+                    
+                    await browser.disconnect()
+
                     return true
                 }
             )
-        } else if (message.type === "set_url") {
-            chrome.tabs.query(
-                {
-                    
-                },
-                async (tabs) => {
-                    await open_url(message.urls[i], tabs[0].id, browser)
-                    
-                }
-            )
+        } else if (message.type === "getObjects") {
+            if (collectedObjects === null) {
+                sendResponse()
+            } else {
+                sendResponse(
+                    {
+                        collected: collectedObjects
+                    }
+                )
+
+                collectedObjects = null
+            }
         }
         return true
     }

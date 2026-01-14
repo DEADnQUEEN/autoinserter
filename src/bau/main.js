@@ -19,24 +19,31 @@ function waitForElm(selector) {
 }
 
 
-waitForElm('#fi1 > div.AddCrit > div.contBtnMap > div').then((elm) => {
-    let el = elm.cloneNode(true)
-    el.querySelector("span").textContent = "Скачать"
+waitForElm(
+    '#fi1 > div.AddCrit > div.contBtnMap > div'
+).then(
+    async (elm) => {
+        var response = await chrome.runtime.sendMessage({type: "getObjects"})
 
-    el.onclick = async () => {
-        let rows = document.querySelectorAll("a[href^='order.php?&mode=modal&id_order=']")
+        if (response !== null) {
+            exportJsonToExcel(response.collected)
+        }
         
-        var urls = []
-        for (let i = 0; i < rows.length; i++) {
-            var url = rows[i].href
-            urls.push(url)
+        let el = elm.cloneNode(true)
+        el.querySelector("span").textContent = "Скачать"
+
+        el.onclick = async () => {
+            let rows = document.querySelectorAll("a[href^='order.php?&mode=modal&id_order=']")
+            
+            var urls = []
+            for (let i = 0; i < rows.length; i++) {
+                var url = rows[i].href
+                urls.push(url)
+            }
+
+            await chrome.runtime.sendMessage({type: "collectObjects", urls: urls})
         }
 
-        var resp = await chrome.runtime.sendMessage({type: "bau_url", urls: urls, return_to: window.location.href})
-
-        console.log(resp)
-        // exportJsonToExcel(output)
+        elm.parentNode.appendChild(el)
     }
-
-    elm.parentNode.appendChild(el)
-});
+);
