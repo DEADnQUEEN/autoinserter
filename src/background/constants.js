@@ -36,3 +36,8 @@ export const master_name_query = "div.gz_cl.gr2-col1"
 
 export const masters_exist_query = master_rows_query + ", #gr2 div.gzEmpNote"
 
+
+export const start_json_from = "filter="
+export const end_json = "&"
+
+export const return_to = "https://baucrm.ithead.ru/sbm/orders_find.php?"
