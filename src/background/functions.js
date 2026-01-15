@@ -9,7 +9,9 @@ import {
     magazine_types,
     address_parts,
     order_query,
-    masters_exist_query
+    masters_exist_query,
+    start_json_from,
+    end_json
 } from "./constants.js"
 
 import { 
@@ -152,4 +154,41 @@ export const function_fields = {
     "Состав заказа": async (page) => {return pretty_print(await concat_order_content(page))},
     "АДРЕС": get_address,
     "ФИО мастера": get_all_masters,
+}
+
+export function parse_bau_search(data) {
+    var start = data.search(start_json_from)
+    if (start === -1) {
+        return undefined
+    }
+
+    data = data.slice(start)
+    data = data.slice(start_json_from.length, data.search(end_json))
+    data = decodeURI(data.replaceAll("array(", "[").replaceAll(")", "]").replaceAll("%22", '"').replaceAll("%3D%3E", ":").replaceAll("%2C", ","))
+
+    data = "[{" + data.slice(2, data.length - 2).replaceAll("],[", "},{") + "}]"
+
+    return JSON.parse(data)
+}
+
+export function compress_to_url(data) {
+    if (data === undefined || data === null) {
+        return undefined
+    }
+
+    if (!(data instanceof Array)) {
+        return undefined
+    }
+
+    var output_strings = []
+
+    for (let i = 0; i < data.length; i++) {
+        var object_strings = []
+        for (var prop in data[i]) {
+            object_strings.push(prop + ":" + JSON.stringify(data[i][prop]).replaceAll('"', "%27"))
+        }
+        output_strings.push("{"+object_strings.join(",")+"}")
+    }
+ 
+    return "["+output_strings.join(",")+"]"
 }

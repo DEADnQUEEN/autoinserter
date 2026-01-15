@@ -4,16 +4,37 @@ import {
 } from '../../node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core-browser.js';
 
 import {
-    selector_to_input
+    return_to,
+    selector_to_input,
+    start_json_from
 } from "./constants.js"
 
 import {
     get_value_from_input,
-    function_fields
+    function_fields,
+    parse_bau_search,
+    compress_to_url,
 } from "./functions.js"
 
 
 var collectedObjects = null
+var collected_filter = null
+
+const active_sessions = {}
+
+async function get_browser(tab_id) {
+    var created = active_sessions[tab_id] === undefined
+    if (active_sessions[tab_id] === undefined) {
+        active_sessions[tab_id] = await connect({
+            transport: await ExtensionTransport.connectTab(tab_id),
+            defaultViewport: null,
+        });
+    } else {
+        active_sessions[tab_id] = active_sessions[tab_id]
+    }
+
+    return [active_sessions[tab_id], created]
+}
 
 
 chrome.runtime.onMessage.addListener(
@@ -24,12 +45,10 @@ chrome.runtime.onMessage.addListener(
                     active: true, 
                     currentWindow: true 
                 }, 
-                async (tabs) => {    
-                    const browser = await connect({
-                        transport: await ExtensionTransport.connectTab(tabs[0].id),
-                        defaultViewport: null,
-                    });
+                async (tabs) => {
+                    const [browser, _] = await get_browser(tabs[0].id)
                     const [page] = await browser.pages()
+                    var window_from = await page.evaluate(() => {return window.location.href})
 
                     var objects = []
                     for (let i = 0; i < message.urls.length; i++) {
@@ -44,17 +63,17 @@ chrome.runtime.onMessage.addListener(
                         for (var func_selection in function_fields) {
                             obj[func_selection] = await function_fields[func_selection](page)
                         }
-                        console.log(obj)
+
                         objects.push(obj)
                     }
 
-                    for (let i = 9; i < message.urls.length; i++) {
-                        await page.goBack()
-                    }
-
                     collectedObjects = objects
-                    
-                    await browser.disconnect()
+
+                    if (collected_filter === null || collected_filter === undefined) {
+                        await page.goto(window_from)
+                    } else {
+                        await page.goto(return_to + start_json_from + collected_filter)
+                    }
 
                     return true
                 }
@@ -71,6 +90,47 @@ chrome.runtime.onMessage.addListener(
 
                 collectedObjects = null
             }
+
+            chrome.tabs.query(
+                {
+                    active: true, 
+                    currentWindow: true 
+                }, 
+                async (tabs) => {
+                    const [browser, created] = await get_browser(tabs[0].id)
+                    const [page] = await browser.pages()
+
+                    if (!created) {
+                        return true
+                    }
+
+                    await page.setRequestInterception(true)
+
+                    page.on(
+                        "request",
+                        async (request) => {
+                            if (request.url().includes(start_json_from)) {
+                                collected_filter = request.url().slice(request.url().search(start_json_from) + start_json_from.length)
+                            }
+
+                            if (!request.url().startsWith('https://baucrm.ithead.ru/sbm/furasm_qry.php')) {
+                                request.continue()
+                                return
+                            }
+
+                            if (request.method() !== 'POST') {
+                                request.continue()
+                                return
+                            }
+
+                            var parsed = parse_bau_search(await request.fetchPostData())
+                            collected_filter = compress_to_url(parsed)
+                            
+                            request.continue()
+                        }
+                    )
+                }
+            )
         }
         return true
     }
