@@ -124,7 +124,7 @@ el.onclick = async () => {
         ))
     }
 
-    exportJsonToExcel(output)
+    exportJsonToExcel(output, undefined, "Выгрузка_ЛМ")
 }
 
 var container = document.querySelector("div.rk-download")

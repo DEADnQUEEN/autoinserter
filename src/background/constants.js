@@ -13,7 +13,7 @@ export const selector_to_input = {
 }
 
 export const magazine_types = {
-    "РШ": "шш",
+    "РШ": "рш",
     "СЗ": "селезнева"
 }
 

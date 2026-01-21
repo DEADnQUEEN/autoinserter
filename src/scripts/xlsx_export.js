@@ -1,5 +1,11 @@
+const EXCEL_FILE = ".xlsx"
+
 // Create a new workbook
-function exportJsonToExcel(data, order = undefined) {
+function exportJsonToExcel(data, order = undefined, filename="data.xlsx") {
+    if (!filename.endsWith(EXCEL_FILE)){
+        filename += EXCEL_FILE
+    }
+
     const workbook = XLSX.utils.book_new();
 
     var worksheet
@@ -14,5 +20,5 @@ function exportJsonToExcel(data, order = undefined) {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
     // Export the workbook as an Excel file
-    XLSX.writeFile(workbook, "data.xlsx");
+    XLSX.writeFile(workbook, ".xlsx");
 }

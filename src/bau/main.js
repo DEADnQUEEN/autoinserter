@@ -26,7 +26,7 @@ waitForElm(
         var response = await chrome.runtime.sendMessage({type: "getObjects"})
 
         if (response !== null) {
-            exportJsonToExcel(response.collected)
+            exportJsonToExcel(response.collected, undefined, "Выгрузка_БАУ")
         }
         
         let el = elm.cloneNode(true)
