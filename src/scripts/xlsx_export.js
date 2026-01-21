@@ -20,5 +20,5 @@ function exportJsonToExcel(data, order = undefined, filename="data.xlsx") {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
     // Export the workbook as an Excel file
-    XLSX.writeFile(workbook, ".xlsx");
+    XLSX.writeFile(workbook, filename);
 }
