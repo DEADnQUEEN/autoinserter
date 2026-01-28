@@ -1,0 +1,1 @@
+FOR /D %%i IN (*.*) DO REG DELETE "HKCU\Software\Google\Chrome\NativeMessagingHosts\%%i" /f

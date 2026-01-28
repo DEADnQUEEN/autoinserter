@@ -131,6 +131,22 @@ chrome.runtime.onMessage.addListener(
                     )
                 }
             )
+        } else if (message.type === "export_to_excel") {     
+            chrome.runtime.sendNativeMessage(
+                "com.python.export_excel",
+                {
+                    
+                },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.error("Ошибка при общении с нативным приложением:", chrome.runtime.lastError.message);
+                        sendResponse({ error: chrome.runtime.lastError.message });
+                    } else {
+                        console.log("r", response)
+                        sendResponse()
+                    }
+                }
+            );
         }
         return true
     }

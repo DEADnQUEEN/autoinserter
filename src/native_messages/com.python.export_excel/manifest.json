@@ -1,0 +1,7 @@
+{
+  "name": "com.python.export_excel",
+  "description": "test_app",
+  "path": "main.exe",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://mfmmlgalkfogipmdifnginpcjmpnepcm/"]
+}
