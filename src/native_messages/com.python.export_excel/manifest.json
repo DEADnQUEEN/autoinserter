@@ -1,6 +1,6 @@
 {
   "name": "com.python.export_excel",
-  "description": "test_app",
+  "description": "review exporter",
   "path": "main.exe",
   "type": "stdio",
   "allowed_origins": ["chrome-extension://mfmmlgalkfogipmdifnginpcjmpnepcm/"]

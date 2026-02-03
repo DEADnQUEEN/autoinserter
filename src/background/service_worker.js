@@ -132,7 +132,6 @@ chrome.runtime.onMessage.addListener(
                 }
             )
         } else if (message.type === "native-messaging") {  
-            console.log(message)   
             chrome.runtime.sendNativeMessage(
                 message.app,
                 {
@@ -143,7 +142,6 @@ chrome.runtime.onMessage.addListener(
                         console.error("Ошибка при общении с нативным приложением:", chrome.runtime.lastError.message);
                         sendResponse({ error: chrome.runtime.lastError.message });
                     } else {
-                        console.log(response)
                         sendResponse(response)
                     }
                 }

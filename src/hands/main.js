@@ -17,7 +17,6 @@ collect_review_el.onclick = async () => {
     collect_review_el.textContent = "Загрузка..."
 
     let dataset = await collect_data_from_pages(await collect_pages_urls(), collect_review)
-    console.log(dataset)
 
     collect_review_el.textContent = "Выгрузка..."
 
@@ -41,7 +40,7 @@ collect_review_el.onclick = async () => {
                 empty.push(empty_list[i]["№ заказа в Руках"])
             }
             text += empty.join("; ")
-            
+
             alert(text)
         } else {
             alert("Все отзывы проставленны")
