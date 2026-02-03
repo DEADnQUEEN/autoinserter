@@ -31,5 +31,9 @@ def write_response(data):
     write(200, {"response": data})
 
 
-def write_error(exception: Exception):
-    write(400, {"error": str(exception)})
+def write_app_error(exception: Exception):
+    write(500, {"error": str(exception)})
+
+
+def write_user_error(error_text: str):
+    write(400, {"error": error_text})

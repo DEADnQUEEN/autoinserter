@@ -131,19 +131,20 @@ chrome.runtime.onMessage.addListener(
                     )
                 }
             )
-        } else if (message.type === "export_to_excel") {     
+        } else if (message.type === "native-messaging") {  
+            console.log(message)   
             chrome.runtime.sendNativeMessage(
-                "com.python.export_excel",
+                message.app,
                 {
-                    
+                    data: message.data
                 },
                 (response) => {
                     if (chrome.runtime.lastError) {
                         console.error("Ошибка при общении с нативным приложением:", chrome.runtime.lastError.message);
                         sendResponse({ error: chrome.runtime.lastError.message });
                     } else {
-                        console.log("r", response)
-                        sendResponse()
+                        console.log(response)
+                        sendResponse(response)
                     }
                 }
             );

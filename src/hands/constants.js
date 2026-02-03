@@ -26,3 +26,17 @@ const shop_renames = {
     "LM_Krasnodar92": "Западный обход",
     "LM_Krasnodar_Adygeya": "Адыгея",
 }
+
+const mark_key = "Отзыв"
+const comment_key = "Комментарий"
+
+const review = [
+    "№ заказа в Руках",
+    mark_key, 
+    comment_key,
+    "Тип кухни",
+    "дата поступления заказа",
+]
+
+const rate_regex = /★ (\d+|None)/gm
+const number_regex = /(\d+|None)/gm

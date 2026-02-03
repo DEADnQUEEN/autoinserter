@@ -1,5 +1,5 @@
 ..\.venv\Scripts\activate && FOR /D %%i IN (*.*) DO (
     if not exist "%~dp0%%i\pyinst" mkdir "%~dp0%%i\pyinst"
     cd "%~dp0%%i\pyinst"
-    pyinstaller --paths "%~dp0utils" -y --onefile --distpath ".." ../main.py
+    pyinstaller --paths "%~dp0utils" -y --onefile --distpath ".." --hiddenimport win32timezone --paths "%~dp0.venv\Lib\site-packages" ../main.py
 )
