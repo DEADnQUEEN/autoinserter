@@ -131,6 +131,21 @@ chrome.runtime.onMessage.addListener(
                     )
                 }
             )
+        } else if (message.type === "native-messaging") {  
+            chrome.runtime.sendNativeMessage(
+                message.app,
+                {
+                    data: message.data
+                },
+                (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.error("Ошибка при общении с нативным приложением:", chrome.runtime.lastError.message);
+                        sendResponse({ error: chrome.runtime.lastError.message });
+                    } else {
+                        sendResponse(response)
+                    }
+                }
+            );
         }
         return true
     }

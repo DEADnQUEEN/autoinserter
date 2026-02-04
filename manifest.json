@@ -2,12 +2,13 @@
     "manifest_version": 3,
     "name": "CodeInserter",
     "description": "code inserter",
-    "version": "0.1",
+    "version": "0.1.2",
     "permissions": [
         "tabs",
         "activeTab",
         "debugger", 
-        "background"
+        "background",
+        "nativeMessaging"
     ],
     "content_scripts": [
         {
@@ -19,6 +20,7 @@
                 "node_modules/xlsx/xlsx.js",
                 "src/scripts/xlsx_export.js",
                 "src/hands/constants.js",
+                "src/hands/functions.js",
                 "src/hands/main.js"
             ]
         },
@@ -30,6 +32,7 @@
             "js": [
                 "node_modules/xlsx/xlsx.js",
                 "src/scripts/xlsx_export.js",
+                "src/scripts/waitFor.js",
                 "src/bau/main.js"
             ]
         }
@@ -37,5 +40,6 @@
     "background": {
         "service_worker": "src/background/service_worker.js",
         "type": "module"
-    }
+    },
+    "key": "jppmkjdinhomihlgmecghncfoaidhmpl"
 }

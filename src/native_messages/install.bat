@@ -1,0 +1,1 @@
+FOR /D %%i IN (*.*) DO REG ADD "HKCU\Software\Google\Chrome\NativeMessagingHosts\%%i" /ve /t REG_SZ /d "%~dp0%%i\manifest.json" /f
