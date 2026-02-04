@@ -34,7 +34,7 @@ collect_review_el.onclick = async () => {
         let empty_list = resp.response.empty
 
         if (empty_list.length > 0) {
-            var text = "Количество не установленных отзывов - "+empty_list.length+"\nНомера заказов без отзывов: "
+            var text = "Отзывы проставленны\n\nКоличество проставленных отзывов:"+dataset.length-empty_list.length+"\nКоличество не установленных отзывов - "+empty_list.length+"\nНомера заказов без отзывов: "
             let empty = []
             for (let i = 0; i < empty_list.length; i++) {
                 empty.push(empty_list[i]["№ заказа в Руках"])
